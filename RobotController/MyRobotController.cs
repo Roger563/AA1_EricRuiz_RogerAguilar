@@ -66,6 +66,22 @@ namespace RobotController
 
     public class MyRobotController
     {
+        // EXERCICIE 2
+        private float totalLerpValue = 1.0f;
+        private float lerpValue = 0.0f;
+        private float lerpSpeed = 0.01f;
+
+        private float r0_initRotation = 74.0f;
+        private float r0_endRotation = 40.0f;
+
+        private float r1_initRotation = -14.0f;
+        private float r1_endRotation = -7.0f;
+
+        private float r2_initRotation = 116.0f;
+        private float r2_endRotation = 100.0f;
+
+        bool e2_finished = false;
+        // EXERCICIE 2
 
         #region public methods
 
@@ -104,9 +120,9 @@ namespace RobotController
             rot3 = NullQ;
 
             rot0 = Rotate(rot0, yAxis, (float)(74.0f * (Math.PI / 180.0f)));
-            rot1 = rot0 * Rotate(rot0, xAxis, (float)(-14.0f * (Math.PI / 180.0f)));
-            rot2 = rot1 * Rotate(rot1, xAxis, (float)(116.0f * (Math.PI / 180.0f)));
-            rot3 = rot2 * Rotate(rot2, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
+            rot1 = rot0 * Rotate(rot1, xAxis, (float)(-14.0f * (Math.PI / 180.0f)));
+            rot2 = rot1 * Rotate(rot2, xAxis, (float)(116.0f * (Math.PI / 180.0f)));
+            rot3 = rot2 * Rotate(rot3, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
         }
 
 
@@ -117,31 +133,49 @@ namespace RobotController
 
         public bool PickStudAnim(out MyQuat rot0, out MyQuat rot1, out MyQuat rot2, out MyQuat rot3)
         {
+            MyVec xAxis;
+            xAxis.x = 1;
+            xAxis.y = 0;
+            xAxis.z = 0;
 
-            bool myCondition = false;
-            //todo: add a check for your condition
+            MyVec yAxis;
+            yAxis.x = 0;
+            yAxis.y = 1;
+            yAxis.z = 0;
 
+            MyVec zAxis;
+            zAxis.x = 0;
+            zAxis.y = 0;
+            zAxis.z = 1;
 
-
-            if (myCondition)
-            {
-                //todo: add your code here
-                rot0 = NullQ;
-                rot1 = NullQ;
-                rot2 = NullQ;
-                rot3 = NullQ;
-
-
-                return true;
-            }
-
-            //todo: remove this once your code works.
             rot0 = NullQ;
             rot1 = NullQ;
             rot2 = NullQ;
             rot3 = NullQ;
 
-            return false;
+            if (totalLerpValue > lerpValue && !e2_finished)
+            {
+                lerpValue += lerpSpeed;
+
+                float tParam = lerpValue / totalLerpValue;
+
+                float newRot0 = r0_initRotation - ((r0_initRotation - r0_endRotation) * tParam);
+                float newRot1 = r1_initRotation - ((r1_initRotation - r1_endRotation) * tParam);
+                float newRot2 = r2_initRotation - ((r2_initRotation - r2_endRotation) * tParam);
+
+                rot0 = Rotate(rot0, yAxis, (float)(newRot0 * (Math.PI / 180.0f)));
+                rot1 = rot0 * Rotate(rot0, xAxis, (float)(newRot1 * (Math.PI / 180.0f)));
+                rot2 = rot1 * Rotate(rot1, xAxis, (float)(newRot2 * (Math.PI / 180.0f)));
+                rot3 = rot2 * Rotate(rot2, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
+
+                return true;
+            }
+            else
+            {
+                lerpValue = 0.0f;
+                e2_finished = true;
+                return false;
+            }
         }
 
 
