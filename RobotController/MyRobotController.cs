@@ -8,11 +8,47 @@ namespace RobotController
 
     public struct MyQuat
     {
-
         public float w;
         public float x;
         public float y;
         public float z;
+
+        public static MyQuat operator *(MyQuat a, MyQuat b)
+        {
+            float w = (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z * b.z);
+            float x = (a.w * b.x) + (a.x * b.w) + (a.y * b.z) - (a.z * b.y);
+            float y = (a.w * b.y) - (a.x * b.z) + (a.y * b.w) + (a.z * b.x);
+            float z = (a.w * b.z) + (a.x * b.y) - (a.y * b.x) + (a.z * b.w);
+
+            MyQuat quatToReturn;
+            quatToReturn.x = x;
+            quatToReturn.y = y;
+            quatToReturn.z = z;
+            quatToReturn.w = w;
+
+            return quatToReturn.Normalize();
+        }
+
+        public MyQuat Normalize()
+        {
+            float length = (float)Math.Sqrt((Math.Pow(this.x, 2.0f)) + (Math.Pow(this.y, 2.0f)) + (Math.Pow(this.z, 2.0f)) + (Math.Pow(this.w, 2.0f)));
+            this.x /= length;
+            this.y /= length;
+            this.z /= length;
+            this.w /= length;
+
+            return this;
+        }
+
+        public MyQuat Inverse()
+        {
+            MyQuat invQuat;
+            invQuat.x = -this.x;
+            invQuat.y = -this.y;
+            invQuat.z = -this.z;
+            invQuat.w = this.w;
+            return invQuat;
+        }
     }
 
     public struct MyVec
@@ -33,8 +69,6 @@ namespace RobotController
 
         #region public methods
 
-
-
         public string Hi()
         {
 
@@ -46,13 +80,33 @@ namespace RobotController
 
         //EX1: this function will place the robot in the initial position
 
-        public void PutRobotStraight(out MyQuat rot0, out MyQuat rot1, out MyQuat rot2, out MyQuat rot3) {
+        public void PutRobotStraight(out MyQuat rot0, out MyQuat rot1, out MyQuat rot2, out MyQuat rot3)
+        {
+            MyVec xAxis;
+            xAxis.x = 1;
+            xAxis.y = 0;
+            xAxis.z = 0;
+
+            MyVec yAxis;
+            yAxis.x = 0;
+            yAxis.y = 1;
+            yAxis.z = 0;
+
+            MyVec zAxis;
+            zAxis.x = 0;
+            zAxis.y = 0;
+            zAxis.z = 1;
 
             //todo: change this, use the function Rotate declared below
             rot0 = NullQ;
             rot1 = NullQ;
             rot2 = NullQ;
             rot3 = NullQ;
+
+            rot0 = Rotate(rot0, yAxis, (float)(74.0f * (Math.PI / 180.0f)));
+            rot1 = rot0 * Rotate(rot0, xAxis, (float)(-14.0f * (Math.PI / 180.0f)));
+            rot2 = rot1 * Rotate(rot1, xAxis, (float)(116.0f * (Math.PI / 180.0f)));
+            rot3 = rot2 * Rotate(rot2, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
         }
 
 
@@ -171,7 +225,11 @@ namespace RobotController
         {
 
             //todo: change this so it takes currentRotation, and calculate a new quaternion rotated by an angle "angle" radians along the normalized axis "axis"
-            return NullQ;
+            currentRotation.x = (float)(axis.x * Math.Sin(angle / 2));
+            currentRotation.y = (float)(axis.y * Math.Sin(angle / 2));
+            currentRotation.z = (float)(axis.z * Math.Sin(angle / 2));
+            currentRotation.w = (float)(Math.Cos(angle / 2));
+            return currentRotation;
 
         }
 
