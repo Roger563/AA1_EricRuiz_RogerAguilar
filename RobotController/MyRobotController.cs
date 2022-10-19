@@ -104,9 +104,9 @@ namespace RobotController
             rot3 = NullQ;
 
             rot0 = Rotate(rot0, yAxis, (float)(74.0f * (Math.PI / 180.0f)));
-            rot1 = Rotate(rot1, xAxis, (float)(-14.0f * (Math.PI / 180.0f)));
-            rot2 = Rotate(rot2, xAxis, (float)(106.0f * (Math.PI / 180.0f)));
-            rot3 = Rotate(rot3, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
+            rot1 = rot0 * Rotate(rot0, xAxis, (float)(-14.0f * (Math.PI / 180.0f)));
+            rot2 = rot1 * Rotate(rot1, xAxis, (float)(116.0f * (Math.PI / 180.0f)));
+            rot3 = rot2 * Rotate(rot2, yAxis, (float)(0.0f * (Math.PI / 180.0f)));
         }
 
 
